@@ -36,16 +36,21 @@ public class ValidationController {
     }
 
     /**
-     * Validates PDF files sent as multipart form data.
+     * Validates PDF files sent as multipart form data. CORS-enabled for direct use from a
+     * browser front-end. {@code authorization}/{@code baseUrl} are optional per-request
+     * overrides of the configured {@code solidsign.api.*} properties.
      *
      * Example:
      *   curl -X POST http://localhost:8094/api/pdf/validate/form \
      *        -F "document=@/path/to/signed.pdf" \
      *        -F "document=@/path/to/other.pdf"
      */
+    @CrossOrigin
     @PostMapping("/form")
     public ResponseEntity<ValidationReportsResponseDTO> validateForm(
-            @RequestPart("document") List<MultipartFile> files) throws IOException {
-        return ResponseEntity.ok(service.validateForm(files));
+            @RequestPart("document") List<MultipartFile> files,
+            @RequestPart(value = "authorization", required = false) String authorization,
+            @RequestPart(value = "baseUrl", required = false) String baseUrl) throws IOException {
+        return ResponseEntity.ok(service.validateForm(files, authorization, baseUrl));
     }
 }
